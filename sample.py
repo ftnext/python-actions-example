@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 
-import os
 import sys
+import os
 
 from my_lib import Object, Object2, Object3
 from third_party import (
@@ -26,7 +26,7 @@ print("Hey")
 print("yo")
 
 
-def add(a, b):
+def add(a,b):
     # from: https://www.slideshare.net/aodag/python-172432039
     c = a + b
     return c
