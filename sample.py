@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 
-import sys
 import os
+import sys
 
 from my_lib import Object, Object2, Object3
 from third_party import (
