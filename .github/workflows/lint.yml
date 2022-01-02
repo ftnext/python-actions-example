@@ -19,7 +19,7 @@ jobs:
           git config --global user.name $GITHUB_ACTOR
           git config --global user.email $GITHUB_ACTOR@users.noreply.github.com
       - name: Sort imports if needed
-        # actions/checkout@v2 を使っているので、コミット作成が以下のように書ける
+        # actions/checkout@v2 を使っているので、git remote set-url不要でgit pushまでできる
         # ref: https://stackoverflow.com/a/58393457
         run: |
           isort --check-only --diff . || isort -v .
