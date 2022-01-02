@@ -27,7 +27,6 @@ jobs:
           git push
       - name: Format with black if needed
         run: |
-          git pull
           black --check --diff . || black -v .
           git commit -am "[style] Format Python code with black in GitHub Actions"
           git push
