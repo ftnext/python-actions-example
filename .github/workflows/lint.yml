@@ -3,29 +3,8 @@ name: Lint
 on: [push]
 
 jobs:
-  lint-check:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Setup Python 3.9
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.9
-      - name: Check by isort
-        uses: isort/isort-action@master
-        if: always()
-      - name: Check by black
-        uses: psf/black@stable
-        with:
-          options: "--check --diff -v"
-        if: always()
-
   lint:
     runs-on: ubuntu-latest
-    needs: lint-check
-    # lint-check jobがステータスコード0でなければ、フォーマットしたコミットを作る必要がある
-    if: failure()
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -33,15 +12,57 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.9
-      - name: Format by isort
-        uses: isort/isort-action@master
-        with:
-          configuration: "-v"
-      - name: Format by black
-        uses: psf/black@stable
-        with:
-          options: "-v"
-      - name: Commit
-        uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          commit_message: "Format by isort and black"
+      - name: Install dependencies
+        run: python -m pip install black isort
+      - name: Sort imports if needed
+        # actions/checkout@v2 を使っているので、コミット作成が以下のように書ける
+        # ref: https://stackoverflow.com/a/58393457
+        run: |
+          isort --check-only --diff . || isort -v .
+          git config --global user.name $GITHUB_ACTOR
+          git config --global user.email $GITHUB_ACTOR@users.noreply.github.com
+          git commit -am "[style] Format Python code with isort in GitHub Actions"
+          git push
+
+  # lint-check:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
+  #     - name: Setup Python 3.9
+  #       uses: actions/setup-python@v2
+  #       with:
+  #         python-version: 3.9
+  #     - name: Check by isort
+  #       uses: isort/isort-action@master
+  #       if: always()
+  #     - name: Check by black
+  #       uses: psf/black@stable
+  #       with:
+  #         options: "--check --diff -v"
+  #       if: always()
+
+  # lint:
+  #   runs-on: ubuntu-latest
+  #   needs: lint-check
+  #   # lint-check jobがステータスコード0でなければ、フォーマットしたコミットを作る必要がある
+  #   if: failure()
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
+  #     - name: Setup Python 3.9
+  #       uses: actions/setup-python@v2
+  #       with:
+  #         python-version: 3.9
+  #     - name: Format by isort
+  #       uses: isort/isort-action@master
+  #       with:
+  #         configuration: "-v"
+  #     - name: Format by black
+  #       uses: psf/black@stable
+  #       with:
+  #         options: "-v"
+  #     - name: Commit
+  #       uses: stefanzweifel/git-auto-commit-action@v4
+  #       with:
+  #         commit_message: "Format by isort and black"
